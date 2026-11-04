@@ -1,7 +1,7 @@
 name: Excavator
 
 # Keeps bucket/nanyx.json in step with the latest `compiler/<version>` release
-# of Richiban/nanyx. Scoop's checkver reads the version from the releases page,
+# of nanyx-lang/nanyx. Scoop's checkver reads the version from the releases page,
 # downloads the new zip, computes its hash and rewrites the manifest; this
 # workflow then commits the result.
 

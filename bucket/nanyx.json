@@ -1,23 +1,23 @@
 {
     "version": "0.2.0",
     "description": "The Nanyx programming language: compiles .nyx files to WebAssembly and runs them on an embedded Wasmtime engine",
-    "homepage": "https://github.com/Richiban/nanyx",
+    "homepage": "https://github.com/nanyx-lang/nanyx",
     "license": "Unknown",
     "architecture": {
         "64bit": {
-            "url": "https://github.com/Richiban/nanyx/releases/download/compiler/0.2.0/nanyx-0.2.0-win-x64.zip",
+            "url": "https://github.com/nanyx-lang/nanyx/releases/download/compiler/0.2.0/nanyx-0.2.0-win-x64.zip",
             "hash": "9afddee06ffb5753f536d5fadd93ac8217d5669353dfaec0292bb2ad3702d673"
         }
     },
     "bin": "nanyx.exe",
     "checkver": {
-        "url": "https://github.com/Richiban/nanyx/releases",
+        "url": "https://github.com/nanyx-lang/nanyx/releases",
         "regex": "releases/tag/compiler(?:/|%2F)([\\d.]+)"
     },
     "autoupdate": {
         "architecture": {
             "64bit": {
-                "url": "https://github.com/Richiban/nanyx/releases/download/compiler/$version/nanyx-$version-win-x64.zip"
+                "url": "https://github.com/nanyx-lang/nanyx/releases/download/compiler/$version/nanyx-$version-win-x64.zip"
             }
         }
     }
