@@ -1,0 +1,50 @@
+name: Excavator
+
+# Keeps bucket/nanyx.json in step with the latest `compiler/<version>` release
+# of Richiban/nanyx. Scoop's checkver reads the version from the releases page,
+# downloads the new zip, computes its hash and rewrites the manifest; this
+# workflow then commits the result.
+
+on:
+  schedule:
+    - cron: '17 6 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: excavator
+  cancel-in-progress: false
+
+jobs:
+  excavate:
+    runs-on: windows-latest
+    steps:
+      - name: Check out the bucket
+        uses: actions/checkout@v4
+
+      - name: Install Scoop
+        shell: pwsh
+        run: |
+          Invoke-RestMethod -Uri https://get.scoop.sh -OutFile "$env:RUNNER_TEMP\install-scoop.ps1"
+          & "$env:RUNNER_TEMP\install-scoop.ps1" -RunAsAdmin
+          "$env:USERPROFILE\scoop\shims" | Out-File -FilePath $env:GITHUB_PATH -Append -Encoding utf8
+
+      - name: Check for new compiler releases
+        shell: pwsh
+        run: .\bin\checkver.ps1 -Update
+
+      - name: Commit manifest updates
+        shell: pwsh
+        run: |
+          git add bucket
+          if (git diff --cached --quiet) {
+            Write-Host 'No manifest changes.'
+            exit 0
+          }
+          $version = (Get-Content bucket/nanyx.json -Raw | ConvertFrom-Json).version
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -m "nanyx: Update to version $version"
+          git push

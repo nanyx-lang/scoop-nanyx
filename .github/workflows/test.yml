@@ -1,0 +1,39 @@
+name: Test
+
+# Installs nanyx from this checkout of the bucket on a Windows runner and runs
+# it, so a broken manifest (bad URL, wrong hash, wrong bin) fails here rather
+# than on a user's machine.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  install:
+    runs-on: windows-latest
+    steps:
+      - name: Check out the bucket
+        uses: actions/checkout@v4
+
+      - name: Install Scoop
+        shell: pwsh
+        run: |
+          Invoke-RestMethod -Uri https://get.scoop.sh -OutFile "$env:RUNNER_TEMP\install-scoop.ps1"
+          & "$env:RUNNER_TEMP\install-scoop.ps1" -RunAsAdmin
+          "$env:USERPROFILE\scoop\shims" | Out-File -FilePath $env:GITHUB_PATH -Append -Encoding utf8
+
+      - name: Install nanyx from this bucket
+        shell: pwsh
+        run: |
+          scoop bucket add nanyx "$env:GITHUB_WORKSPACE"
+          scoop install nanyx
+
+      - name: Run nanyx
+        shell: pwsh
+        run: nanyx --help
+
+      - name: Uninstall nanyx
+        shell: pwsh
+        run: scoop uninstall nanyx
