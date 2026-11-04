@@ -24,11 +24,11 @@ jobs:
           & "$env:RUNNER_TEMP\install-scoop.ps1" -RunAsAdmin
           "$env:USERPROFILE\scoop\shims" | Out-File -FilePath $env:GITHUB_PATH -Append -Encoding utf8
 
-      - name: Install nanyx from this bucket
+      - name: Install nanyx from this checkout's manifest
         shell: pwsh
-        run: |
-          scoop bucket add nanyx "$env:GITHUB_WORKSPACE"
-          scoop install nanyx
+        # `scoop bucket add` only accepts Git URLs, so install straight from
+        # the manifest file in this checkout.
+        run: scoop install "$env:GITHUB_WORKSPACE\bucket\nanyx.json"
 
       - name: Run nanyx
         shell: pwsh

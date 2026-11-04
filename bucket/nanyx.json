@@ -12,7 +12,7 @@
     "bin": "nanyx.exe",
     "checkver": {
         "url": "https://github.com/Richiban/nanyx/releases",
-        "regex": "releases/tag/compiler/([\\d.]+)"
+        "regex": "releases/tag/compiler(?:/|%2F)([\\d.]+)"
     },
     "autoupdate": {
         "architecture": {

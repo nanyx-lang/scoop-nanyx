@@ -33,7 +33,12 @@ jobs:
 
       - name: Check for new compiler releases
         shell: pwsh
-        run: .\bin\checkver.ps1 -Update
+        run: |
+          $log = (.\bin\checkver.ps1 -Update *>&1 | Out-String)
+          Write-Host $log
+          # checkver reports problems (no match, download failure) without a
+          # non-zero exit code, so fail the job ourselves.
+          if ($log -match "couldn't match|ERROR") { exit 1 }
 
       - name: Commit manifest updates
         shell: pwsh
