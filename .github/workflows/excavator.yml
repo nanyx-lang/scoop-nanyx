@@ -3,7 +3,12 @@ name: Excavator
 # Keeps bucket/nanyx.json in step with the latest `compiler/<version>` release
 # of nanyx-lang/nanyx. Scoop's checkver reads the version from the releases page,
 # downloads the new zip, computes its hash and rewrites the manifest; this
-# workflow then commits the result.
+# workflow installs and runs nanyx from that manifest, then commits the result.
+#
+# The install is checked here rather than left to the Test workflow because a
+# push made with GITHUB_TOKEN does not trigger other workflows, so Test never
+# sees these commits. Failing before the commit keeps a broken manifest out of
+# the bucket.
 
 on:
   schedule:
@@ -39,6 +44,17 @@ jobs:
           # checkver reports problems (no match, download failure) without a
           # non-zero exit code, so fail the job ourselves.
           if ($log -match "couldn't match|ERROR") { exit 1 }
+
+      # Runs whether or not checkver changed anything, so the daily run also
+      # re-checks the manifest that is already published.
+      - name: Install and run nanyx from the manifest
+        shell: pwsh
+        run: |
+          scoop install "$env:GITHUB_WORKSPACE\bucket\nanyx.json"
+          if ($LASTEXITCODE) { exit $LASTEXITCODE }
+          nanyx --help
+          if ($LASTEXITCODE) { exit $LASTEXITCODE }
+          scoop uninstall nanyx
 
       - name: Commit manifest updates
         shell: pwsh
