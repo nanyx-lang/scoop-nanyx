@@ -1,8 +1,10 @@
 name: Excavator
 
 # Keeps bucket/nanyx.json in step with the latest `compiler/<version>` release
-# of nanyx-lang/nanyx. Scoop's checkver reads the version from the releases page,
-# downloads the new zip, computes its hash and rewrites the manifest; this
+# of nanyx-lang/nanyx. Scoop's checkver runs the manifest's checkver script, which
+# picks the highest `compiler/<version>` from the GitHub releases API (the releases
+# page does not list releases in version order, so its first link is not the
+# newest), downloads the new zip, computes its hash and rewrites the manifest; this
 # workflow installs and runs nanyx from that manifest, then commits the result.
 #
 # The install is checked here rather than left to the Test workflow because a
@@ -38,12 +40,16 @@ jobs:
 
       - name: Check for new compiler releases
         shell: pwsh
+        env:
+          # The checkver script authenticates with this when it is set, so the
+          # releases API is not subject to the shared runner's anonymous rate limit.
+          GITHUB_TOKEN: ${{ github.token }}
         run: |
           $log = (.\bin\checkver.ps1 -Update *>&1 | Out-String)
           Write-Host $log
-          # checkver reports problems (no match, download failure) without a
-          # non-zero exit code, so fail the job ourselves.
-          if ($log -match "couldn't match|ERROR") { exit 1 }
+          # checkver reports problems (no match, no output from the script,
+          # download failure) without a non-zero exit code, so fail the job ourselves.
+          if ($log -match "couldn't|ERROR") { exit 1 }
 
       # Runs whether or not checkver changed anything, so the daily run also
       # re-checks the manifest that is already published.
