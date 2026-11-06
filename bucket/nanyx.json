@@ -11,8 +11,15 @@
     },
     "bin": "nanyx.exe",
     "checkver": {
-        "url": "https://github.com/nanyx-lang/nanyx/releases",
-        "regex": "releases/tag/compiler(?:/|%2F)([\\d.]+)"
+        "script": [
+            "$headers = @{ 'User-Agent' = 'scoop-nanyx' }",
+            "if ($env:GITHUB_TOKEN) { $headers.Authorization = \"Bearer $env:GITHUB_TOKEN\" }",
+            "$releases = Invoke-RestMethod -Headers $headers -Uri 'https://api.github.com/repos/nanyx-lang/nanyx/releases?per_page=100'",
+            "$versions = $releases | Where-Object { -not $_.draft -and -not $_.prerelease } | ForEach-Object { if ($_.tag_name -match '^compiler/(\\d+(?:\\.\\d+)+)$') { [version]$Matches[1] } }",
+            "$latest = $versions | Sort-Object -Descending | Select-Object -First 1",
+            "if ($latest) { \"compiler/$latest\" }"
+        ],
+        "regex": "compiler/([\\d.]+)"
     },
     "autoupdate": {
         "architecture": {
