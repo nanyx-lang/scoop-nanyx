@@ -1,12 +1,12 @@
 {
-    "version": "0.36.0",
+    "version": "0.37.0",
     "description": "The Nanyx programming language: compiles .nyx files to WebAssembly and runs them on an embedded Wasmtime engine",
     "homepage": "https://github.com/nanyx-lang/nanyx",
     "license": "Unknown",
     "architecture": {
         "64bit": {
-            "url": "https://github.com/nanyx-lang/nanyx/releases/download/compiler/0.36.0/nanyx-0.36.0-win-x64.zip",
-            "hash": "7a6531b54207318b0a90c3fc594b0418d38d5c71482d2aab3c004278c25a544d"
+            "url": "https://github.com/nanyx-lang/nanyx/releases/download/compiler/0.37.0/nanyx-0.37.0-win-x64.zip",
+            "hash": "bf881d04846686d84356722a8047533abe7cd54b61a868b8420f61c17f93d8cb"
         }
     },
     "bin": "nanyx.exe",
